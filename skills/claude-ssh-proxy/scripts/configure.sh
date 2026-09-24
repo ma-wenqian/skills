@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Runs ON the remote server, piped over ssh:
-#   ssh <host> 'bash -s' -- <check|apply|restart|verify> [args] < configure.sh
+#   ssh <host> "bash -s -- <check|apply|restart|verify> '<arg>'..." < configure.sh
+# The server's shell re-parses that string: quote each argument as shown and
+# percent-encode the proxy user/password so the URL holds no single quote.
 #
 #   check   <proxy-url>               API status direct and through the proxy
 #   apply   <proxy-url> [no-proxy]    merge proxy vars into ~/.claude/settings.json
@@ -9,6 +11,8 @@
 set -euo pipefail
 
 SETTINGS="$HOME/.claude/settings.json"
+# write through a symlinked settings file (dotfile repos) instead of replacing the link
+SETTINGS=$(readlink -f "$SETTINGS" 2>/dev/null || echo "$SETTINGS")
 API=https://api.anthropic.com
 # "[c]laude" matches "claude" but not this literal text, so pgrep/pkill never
 # match a shell whose own command line carries the pattern
