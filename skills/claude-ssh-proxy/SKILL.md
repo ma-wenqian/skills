@@ -43,7 +43,19 @@ ssh -f -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -R 127.0.0.1:178
 Then use `http://127.0.0.1:17890` as the proxy URL. Tell the user the trade-offs before choosing this:
 
 - It works only while that `ssh` process runs on their computer. It dies with sleep, network changes or a reboot, and the remote Claude then loses its network until it's started again (`autossh` or a startup task can keep it up).
-- Run it as its own process. Don't put `RemoteForward` in `~/.ssh/config` and expect the Desktop app's connection to open it; the app isn't guaranteed to honor it.
+- The tunnel needs a real OpenSSH process. The Desktop app connects with its own SSH library and reads `~/.ssh/config` only to resolve the host, so a `RemoteForward` there doesn't open on the app's connection.
+- For something easier to rerun, put the forward in `~/.ssh/config` under a dedicated alias and start it with `ssh -fN <alias>`:
+
+  ```
+  Host <host>-tunnel
+      HostName <same as host>
+      User <same as host>
+      RemoteForward 127.0.0.1:17890 127.0.0.1:<local-port>
+      ExitOnForwardFailure yes
+      ServerAliveInterval 30
+  ```
+
+  Don't add `RemoteForward` to the alias the user normally logs in with: every extra `ssh` to it would try to bind the same port and warn, or fail with `ExitOnForwardFailure`.
 - The remote Claude then exits wherever the user's local proxy exits.
 
 ## 2. Check
