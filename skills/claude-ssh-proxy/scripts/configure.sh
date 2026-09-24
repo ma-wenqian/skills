@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Runs ON the remote server, piped over ssh:
-#   ssh <host> 'bash -s' -- <detect|check|apply|restart|verify> [args] < configure.sh
+#   ssh <host> 'bash -s' -- <check|apply|restart|verify> [args] < configure.sh
 #
-#   detect                            proxies already configured or listening on the server
 #   check   <proxy-url>               API status direct and through the proxy
 #   apply   <proxy-url> [no-proxy]    merge proxy vars into ~/.claude/settings.json
 #   restart                           stop the Desktop app's long-lived remote server
@@ -35,18 +34,6 @@ status() {
 
 cmd=${1:-}; shift || true
 case "$cmd" in
-  detect)
-    echo "## proxy in $SETTINGS"
-    grep -E '"(HTTPS?_PROXY|NO_PROXY)"' "$SETTINGS" 2>/dev/null | mask || echo "  (none)"
-    echo "## proxy variables in the SSH login environment"
-    env | grep -iE '^(https?|all|no)_proxy=' | mask || echo "  (none)"
-    echo "## listeners on this server that look like a proxy"
-    found=$(ss -ltnpH 2>/dev/null |
-      grep -iE 'clash|mihomo|sing-box|xray|v2ray|gost|squid|tinyproxy|privoxy|glider|:(1080|1087|3128|7890|7891|7897|8080|8118|10808|10809)[[:space:]]' |
-      awk '{print "  " $4 "  " $6}' || true)
-    echo "${found:-  (none)}"
-    ;;
-
   check)
     proxy=${1:?proxy URL required}; check_url "$proxy"
     direct=$(curl -s -o /dev/null -m 10 -w '%{http_code}' "$API" || true)
@@ -116,5 +103,5 @@ PY
     ;;
 
   *)
-    echo "usage: configure.sh detect|check|apply|restart|verify ..." >&2; exit 2 ;;
+    echo "usage: configure.sh check|apply|restart|verify ..." >&2; exit 2 ;;
 esac

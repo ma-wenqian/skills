@@ -20,13 +20,7 @@ Talk to the user in their language. Run everything from the user's local machine
 Never invent one. In this order:
 
 1. **Already known.** If memory, CLAUDE.md, notes or the conversation name a proxy for this host, propose it and ask the user to confirm before using it.
-2. **Look on the server.**
-
-   ```bash
-   ssh <host> 'bash -s' -- detect < scripts/configure.sh
-   ```
-
-   It shows a proxy already in the settings file, proxy variables in the login shell, and local listeners that look like Clash, mihomo, sing-box, xray, squid and the like. Offer what it finds as candidates; confirm with the user.
+2. **Look on the server.** Check for a proxy already in `~/.claude/settings.json`, proxy variables in the login shell, and a proxy listening locally (Clash, mihomo, sing-box, xray, squid and the like). Offer what you find as candidates and confirm with the user.
 3. **Ask the user.** If they don't have one, lay out the options:
    - **A proxy the server can already reach**: one running on the server, or a gateway on its LAN. Use its HTTP (or mixed) port.
    - **Borrow the proxy on the user's own computer** through an SSH reverse tunnel. See the next section.
