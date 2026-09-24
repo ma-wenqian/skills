@@ -1,0 +1,17 @@
+{
+  "name": "vinkey-skills",
+  "owner": {
+    "name": "Vinkey",
+    "url": "https://www.mawenqian.com"
+  },
+  "description": "Vinkey's Agent Skills collection",
+  "plugins": [
+    {
+      "name": "claude-ssh-proxy",
+      "source": "./skills/claude-ssh-proxy",
+      "description": "Route the Claude Code that Claude Desktop runs on a remote SSH server through an HTTP(S) proxy",
+      "strict": false,
+      "skills": ["./"]
+    }
+  ]
+}
